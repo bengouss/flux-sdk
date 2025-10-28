@@ -21,6 +21,7 @@
 #include "flxUtils.h"
 #include <string.h>
 #include <time.h>
+#include <sys/time.h>
 
 //----------------------------------------------------------------------------
 // Our time rate/metrics class
@@ -372,6 +373,10 @@ void flxLogger::updateTimeParameterName(void)
     case TimeStampEpoch:
         timeTitle = "Time (Epoch)";
         break;
+
+    case TimeStampEpochMillis:
+        timeTitle = "Time ms (Epoch)";
+        break;
     }
     timestamp.setName(timeTitle);
 }
@@ -426,6 +431,10 @@ std::string flxLogger::get_timestamp(void)
     time_t t_now;
     time(&t_now);
     struct tm *tmLocal = localtime(&t_now);
+
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
+
     switch (_timestampType)
     {
     case TimeStampMillis:
@@ -434,6 +443,10 @@ std::string flxLogger::get_timestamp(void)
 
     case TimeStampEpoch:
         snprintf(szBuffer, sizeof(szBuffer), "%ld", t_now);
+        break;
+    
+    case TimeStampEpochMillis:
+        snprintf(szBuffer, sizeof(szBuffer), "%ld%03d", tv.tv_sec, tv.tv_usec/1000);
         break;
 
     case TimeStampDateTimeUSA:
